@@ -19,6 +19,15 @@ export default function Budgets() {
   });
   const [error, setError] = useState("");
 
+  // Calculate spent amounts from transactions
+  const updateBudgetsWithSpent = (bgs, txs) => {
+    if (!Array.isArray(bgs) || !Array.isArray(txs)) {
+      return;
+    }
+    const updated = dataService.calculateBudgetSpent(bgs, txs);
+    setBudgets(updated);
+  };
+
   // Load data and subscribe to updates
   useEffect(() => {
     const loadData = async () => {
@@ -33,17 +42,14 @@ export default function Budgets() {
     // Subscribe to real-time updates
     const unsubscribe = dataService.subscribe(({ transactions: txs, budgets: bgs }) => {
       setTransactions(txs);
-      updateBudgetsWithSpent(bgs, txs);
+      // Always recalculate spent amounts when data changes
+      // Get fresh budgets from dataService to ensure we have the latest
+      const currentBudgets = dataService.loadBudgets();
+      updateBudgetsWithSpent(currentBudgets, txs);
     });
     
     return unsubscribe;
   }, []);
-
-  // Calculate spent amounts from transactions
-  const updateBudgetsWithSpent = (bgs, txs) => {
-    const updated = dataService.calculateBudgetSpent(bgs, txs);
-    setBudgets(updated);
-  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

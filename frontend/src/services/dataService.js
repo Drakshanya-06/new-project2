@@ -112,30 +112,61 @@ class DataService {
 
   // Calculate spent amounts for budgets based on transactions
   calculateBudgetSpent(budgets, transactions) {
+    if (!Array.isArray(budgets) || !Array.isArray(transactions)) {
+      return budgets || [];
+    }
+    
     return budgets.map(budget => {
-      const category = budget.category || '';
-      const month = budget.month || '';
+      const category = (budget.category || '').trim();
+      const month = (budget.month || '').trim();
       
       // Filter transactions matching this budget's category and month
       const matchingTxs = transactions.filter(tx => {
-        const txDate = new Date(tx.date || Date.now());
+        // Parse transaction date - handle both string and Date objects
+        let txDate;
+        if (tx.date) {
+          txDate = tx.date instanceof Date ? tx.date : new Date(tx.date);
+        } else {
+          txDate = new Date();
+        }
+        
+        // Validate date
+        if (isNaN(txDate.getTime())) {
+          return false;
+        }
+        
         const txMonth = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}`;
-        const matchesCategory = (tx.category || '').toLowerCase() === category.toLowerCase();
+        const txCategory = (tx.category || '').trim();
+        
+        // Match category (case-insensitive, trimmed)
+        const matchesCategory = category && txCategory && 
+          txCategory.toLowerCase() === category.toLowerCase();
+        
+        // Match month (if budget has a month specified)
         const matchesMonth = !month || txMonth === month;
-        const isExpense = tx.type === 'Expense' || (tx.amount && tx.amount < 0);
+        
+        // Check if it's an expense
+        const isExpense = tx.type === 'Expense' || (tx.amount && Number(tx.amount) < 0);
         
         return matchesCategory && matchesMonth && isExpense;
       });
       
-      const spent = matchingTxs.reduce((sum, tx) => sum + Math.abs(Number(tx.amount) || 0), 0);
+      // Sum up the absolute values of matching transactions
+      const spent = matchingTxs.reduce((sum, tx) => {
+        const amount = Math.abs(Number(tx.amount) || 0);
+        return sum + amount;
+      }, 0);
+      
+      const budgetAmount = Number(budget.budget || budget.amount || 0);
+      const remaining = budgetAmount - spent;
       
       return {
         ...budget,
         spent,
-        remaining: (budget.budget || budget.amount || 0) - spent,
-        status: spent > (budget.budget || budget.amount || 0) 
-          ? `Overbudget by: $${(spent - (budget.budget || budget.amount || 0)).toFixed(2)}`
-          : `Remaining by: $${((budget.budget || budget.amount || 0) - spent).toFixed(2)}`
+        remaining,
+        status: spent > budgetAmount 
+          ? `Overbudget by: $${(spent - budgetAmount).toFixed(2)}`
+          : `Remaining by: $${remaining.toFixed(2)}`
       };
     });
   }
