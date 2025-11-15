@@ -1,8 +1,9 @@
 // frontend/src/Transactions.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaHome, FaExchangeAlt, FaWallet, FaCalculator, FaChartPie, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { dataService } from "./services/dataService";
 import "./transactions.css";
 
 const API_BASE = "http://localhost:4000/api";
@@ -43,6 +44,7 @@ function AddCategoryModal({ open, onClose, onAdded }) {
 }
 
 export default function Transactions() {
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -61,45 +63,94 @@ export default function Transactions() {
   // modal
   const [showAddCat, setShowAddCat] = useState(false);
 
+  // Load transactions from data service
+  useEffect(() => {
+    const loadData = async () => {
+      const txs = await dataService.loadTransactions();
+      applyFilters(txs);
+    };
+    
+    loadData();
+    
+    // Subscribe to real-time updates
+    const unsubscribe = dataService.subscribe(({ transactions: txs }) => {
+      applyFilters(txs);
+    });
+    
+    return unsubscribe;
+  }, [q, from, to]);
+
+  const applyFilters = (allTxs) => {
+    let filtered = [...allTxs];
+    
+    // Search filter
+    if (q && q.trim()) {
+      const query = q.toLowerCase();
+      filtered = filtered.filter(tx => 
+        (tx.description || '').toLowerCase().includes(query) ||
+        (tx.merchant || '').toLowerCase().includes(query) ||
+        (tx.category || '').toLowerCase().includes(query)
+      );
+    }
+    
+    // Date filters
+    if (from) {
+      filtered = filtered.filter(tx => {
+        const txDate = new Date(tx.date || Date.now()).toISOString().slice(0, 10);
+        return txDate >= from;
+      });
+    }
+    
+    if (to) {
+      filtered = filtered.filter(tx => {
+        const txDate = new Date(tx.date || Date.now()).toISOString().slice(0, 10);
+        return txDate <= to;
+      });
+    }
+    
+    // Show only expense transactions (as per image)
+    filtered = filtered.filter(tx => tx.type === 'Expense' || (tx.amount && tx.amount < 0));
+    
+    setTransactions(filtered);
+    setTotal(filtered.length);
+  };
+
   async function fetchCategories() {
     try {
-      const res = await axios.get(`${API_BASE}/categories`);
-      setCategories(res.data.data || []);
+      const res = await axios.get(`${API_BASE}/categories`).catch(() => null);
+      if (res?.data) {
+        setCategories(res.data.data || []);
+      } else {
+        // Fallback categories
+        setCategories(['Rent/Mortgage', 'Groceries', 'Transport', 'Utilities', 'Business Expenses', 'Food', 'Others']);
+      }
     } catch (e) {
       console.error(e);
-      setCategories([]);
+      setCategories(['Rent/Mortgage', 'Groceries', 'Transport', 'Utilities', 'Business Expenses', 'Food', 'Others']);
     }
-  }
-
-  async function fetchTransactions(p = 1) {
-    setLoading(true);
-    try {
-      const params = { page: p, limit };
-      if (q && q.trim()) params.q = q.trim();
-      if (from) params.from = from;
-      if (to) params.to = to;
-      const res = await axios.get(`${API_BASE}/transactions`, { params });
-      setTransactions(res.data.data || []);
-      setTotal(res.data.total || 0);
-      setPage(p);
-    } catch (err) {
-      console.error(err);
-      setTransactions([]);
-    }
-    setLoading(false);
   }
 
   useEffect(() => {
     fetchCategories();
-    fetchTransactions(1);
-    // eslint-disable-next-line
   }, []);
 
-  const onSearchClick = () => fetchTransactions(1);
-  const onFilterApply = () => fetchTransactions(1);
+  const onSearchClick = () => {
+    const allTxs = dataService.getData().transactions;
+    applyFilters(allTxs);
+  };
+  
+  const onFilterApply = () => {
+    const allTxs = dataService.getData().transactions;
+    applyFilters(allTxs);
+  };
+  
   const onClearFilters = () => {
-    setQ(""); setFrom(""); setTo(""); setShowDateFilters(false);
-    fetchTransactions(1);
+    setQ(""); 
+    setFrom(""); 
+    setTo(""); 
+    setShowDateFilters(false);
+    const allTxs = dataService.getData().transactions;
+    applyFilters(allTxs);
   };
 
   // helper to read user from localStorage for avatar + info
@@ -169,7 +220,7 @@ export default function Transactions() {
               onClick={() => {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                window.location.href = '/login';
+                navigate('/login');
               }}
             >
               <FaSignOutAlt /> Logout
@@ -228,55 +279,31 @@ export default function Transactions() {
                   <th>Merchant</th>
                   <th>Amount</th>
                   <th>Card</th>
-                  <th>Category</th>
                   <th>Status</th>
-                  <th style={{ width: 130 }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="7" className="center">Loading...</td></tr>
+                  <tr><td colSpan="5" className="center">Loading...</td></tr>
                 ) : transactions.length === 0 ? (
-                  <tr><td colSpan="7" className="center">No transactions</td></tr>
-                ) : transactions.map(tx => (
-                  <tr key={tx.id}>
+                  <tr><td colSpan="5" className="center">No transactions</td></tr>
+                ) : transactions.slice(0, 4).map(tx => (
+                  <tr key={tx.id || tx._id || Math.random()}>
                     <td>{formatDate(tx.date)}</td>
-                    <td>{tx.merchant}</td>
-                    <td>${Number(tx.amount).toFixed(2)}</td>
-                    <td>{tx.card}</td>
-                    <td>{tx.category}</td>
-                    <td><span className={`badge ${String(tx.status || '').toLowerCase()}`}>{tx.status}</span></td>
-                    <td>
-                      <button className="btn small" onClick={async () => {
-                        if (!window.confirm("Delete this transaction?")) return;
-                        try {
-                          await axios.delete(`${API_BASE}/transactions/${tx.id}`);
-                        } catch (e) { console.error(e); }
-                        fetchTransactions(page);
-                      }}>Delete</button>
-
-                      <button className="btn small" onClick={async () => {
-                        try {
-                          const newStatus = tx.status === "Cancelled" ? "Completed" : "Cancelled";
-                          await axios.put(`${API_BASE}/transactions/${tx.id}`, { status: newStatus });
-                        } catch (e) { console.error(e); }
-                        fetchTransactions(page);
-                      }}>{tx.status === "Cancelled" ? "Mark Completed" : "Cancel"}</button>
-                    </td>
+                    <td>{tx.merchant || tx.description || 'N/A'}</td>
+                    <td>${Math.abs(Number(tx.amount) || 0).toFixed(2)}</td>
+                    <td>{tx.card || 'Visa'}</td>
+                    <td><span className={`badge ${String(tx.status || 'Completed').toLowerCase()}`}>{tx.status || 'Completed'}</span></td>
                   </tr>
                 ))}
               </tbody>
             </table>
-
-            <div className="tp-table-footer">
-              <div>Showing {transactions.length} of {total}</div>
-              <div className="tp-pagination">
-                <button className="btn" disabled={page <= 1} onClick={() => fetchTransactions(page - 1)}>Prev</button>
-                <span>Page {page}</span>
-                <button className="btn" disabled={(page * limit) >= total} onClick={() => fetchTransactions(page + 1)}>Next</button>
-                <button className="btn" onClick={() => fetchTransactions(1)}>View all</button>
+            
+            {transactions.length > 4 && (
+              <div className="tp-table-footer" style={{textAlign: 'right', padding: '12px'}}>
+                <a href="#" style={{color: '#666', textDecoration: 'none'}}>View all &gt;</a>
               </div>
-            </div>
+            )}
           </div>
 
           {/* bottom budget row */}

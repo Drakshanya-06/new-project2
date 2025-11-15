@@ -1,0 +1,25 @@
+.bc-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #eee;
+  box-shadow: 0 6px 14px rgba(16,24,40,0.04);
+}
+.bc-svg { width: 100%; height: auto; display: block; }
+
+.bc-legend {
+  display:flex;
+  gap:16px;
+  align-items:center;
+  justify-content:center;
+  margin-top:10px;
+  font-weight:700;
+  color:#444;
+}
+.bc-legend-item {
+  display:flex;
+  gap:8px;
+  align-items:center;
+  font-size:13px;
+}
+.bc-swatch { width:14px; height:14px; border-radius:3px; display:inline-block; }

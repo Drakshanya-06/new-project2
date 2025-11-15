@@ -151,6 +151,7 @@
 }
 .kpi-small .kpi-desc{ font-weight:700; font-size:14px; margin-bottom:6px; }
 .kpi-small .kpi-muted{ font-size:12px; color:#666; }
+.kpi-small .kpi-change{ font-size:12px; font-weight:600; }
 
 /* recent-table-wrap now full width under KPI */
 .recent-table-wrap{
