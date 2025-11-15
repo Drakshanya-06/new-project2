@@ -1,0 +1,314 @@
+/* frontend/src/TaxEstimator.css
+   Unified styles for Tax Estimator page to match Dashboard/Transactions look
+*/
+
+/* ===============================
+   ROOT & LAYOUT
+================================= */
+.tp-root {
+  display: flex;
+  min-height: 100vh;
+  font-family: "Georgia", "Times New Roman", serif;
+  color: #222;
+  background: #f7f7f7;
+}
+
+/* ===============================
+   SIDEBAR (shared look)
+================================= */
+.tp-sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid rgba(0,0,0,0.06);
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.03) inset;
+}
+
+.tp-brand {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  margin-bottom: 12px;
+}
+
+/* nav */
+.tp-nav {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tp-nav a {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.05);
+  font-weight: 600;
+}
+
+.tp-nav a .icon {
+  width: 18px;
+  text-align: center;
+}
+
+.tp-nav a.active {
+  background: #d9d6d3;
+  font-weight: 700;
+}
+
+/* ===============================
+   USER AREA (bottom of sidebar)
+================================= */
+.tp-user-area {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.04);
+  width: 100%;
+}
+
+.tp-user {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding-top:6px;
+  width:100%;
+}
+
+.avatar {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#efefef;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  color:#555;
+}
+
+/* user text */
+.user-meta .name {
+  font-weight:700;
+  font-size:14px;
+}
+
+.user-meta .email {
+  font-size:12px;
+  color:#666;
+  margin-top:2px;
+}
+
+/* footer links in sidebar */
+.tp-footer-links {
+  margin-top:8px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.footer-btn {
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.06);
+  background:#fff;
+  text-decoration:none;
+  color:#333;
+  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.footer-btn.logout {
+  color:#ff4d4d;
+  border-color: rgba(255,77,77,0.12);
+}
+
+/* ===============================
+   MAIN CONTENT AREA
+================================= */
+.tp-main {
+  flex: 1;
+  display:flex;
+  flex-direction:column;
+}
+
+.tp-topbar {
+  height: 60px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.tp-topbar-title {
+  width: 80%;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 10px;
+  padding: 10px 16px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 20px;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.02);
+}
+
+.tp-content {
+  padding: 20px 36px 140px 36px; /* bottom padding to leave space for budget bar */
+}
+
+.tp-section-title {
+  font-size: 18px;
+  margin: 18px 0;
+  font-weight: 700;
+}
+
+/* ===============================
+   FILTERS row
+================================= */
+.te-filters {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.te-select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #fff;
+}
+
+/* search */
+.te-search {
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.te-search input {
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.06);
+  min-width:220px;
+}
+
+/* ===============================
+   KPI cards
+================================= */
+.te-kpis {
+  display:flex;
+  gap:16px;
+  margin-bottom: 18px;
+  flex-wrap:wrap;
+}
+
+.kpi-card {
+  background:#fff;
+  padding:14px 16px;
+  border-radius:10px;
+  min-width:220px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.kpi-title { font-weight:700; color:#444; margin-bottom:6px; }
+.kpi-value { font-size:20px; font-weight:800; margin-bottom:6px; }
+.kpi-note { color:#777; font-size:13px; }
+
+/* ===============================
+   CHART card + line chart
+================================= */
+.te-card.chart-card {
+  background:#fff;
+  border-radius:12px;
+  padding:12px 16px;
+  box-shadow:0 3px 12px rgba(0,0,0,0.03);
+  margin-bottom: 12px;
+}
+
+.chart-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-bottom:8px;
+}
+
+.chart-legends {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  color:#555;
+  font-weight:600;
+}
+
+.legend-dot {
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  margin-right:6px;
+}
+
+.legend-dot.black { background:#111827; }
+.legend-dot.gray { background:#9CA3AF; }
+
+.chart-area {
+  padding: 12px 2px 18px;
+}
+
+/* ensure the svg scales responsively */
+.te-linechart { width:100%; height:auto; display:block; }
+
+/* ===============================
+   BUDGET BOTTOM ROW (same fixed bar)
+================================= */
+.tp-budget-row {
+  position: fixed;
+  left: 240px;   /* aligns with sidebar width */
+  right: 20px;
+  bottom: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+  font-weight: 600;
+  z-index: 1000;
+}
+
+.tp-budget-row > div {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ===============================
+   small utility & center states
+================================= */
+.center { text-align:center; padding:24px; color:#666; }
+
+/* ===============================
+   RESPONSIVE
+================================= */
+@media (max-width: 980px) {
+  .tp-sidebar { display:none; }
+  .te-kpis { flex-direction:column; }
+  .tp-budget-row { left: 12px; right: 12px; }
+  .te-search input { min-width: 120px; }
+}
+

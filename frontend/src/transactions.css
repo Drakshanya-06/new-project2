@@ -1,0 +1,433 @@
+/* frontend/src/transactions.css
+   Complete styles for Transactions page (sidebar, main, table, modals, fixed bottom bar)
+*/
+
+/* ===============================
+   ROOT LAYOUT
+================================= */
+
+.tp-root {
+  display: flex;
+  min-height: 100vh;
+  background: #f7f7f7;
+  font-family: "Georgia", "Times New Roman", Times, serif;
+  color: #222;
+}
+
+/* ===============================
+   SIDEBAR
+================================= */
+
+.tp-sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 12px;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.03) inset;
+}
+
+.tp-brand,
+.tp-logo {
+  font-size: 28px;
+  font-weight: 700;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.tp-nav {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Used both for anchor-like nav used previously and NavLink components */
+.tp-nav a,
+.tp-nav .icon {
+  display: flex;
+  align-items: center;
+}
+
+.tp-nav a,
+.tp-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  text-decoration: none;
+  border: 1px solid rgba(0,0,0,0.05);
+  font-weight: 600;
+}
+
+.tp-nav a .icon,
+.tp-nav-item .icon {
+  width: 20px;
+  text-align: center;
+}
+
+.tp-nav a.active,
+.tp-nav-item.active {
+  background: #d9d6d3;
+  font-weight: 700;
+}
+
+/* USER CARD (bottom of sidebar) */
+
+.tp-user-area,
+.tp-usercard {
+  margin-top: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tp-user {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #eaeaea;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  color: #555;
+}
+
+.user-info,
+.user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info .name,
+.user-meta .name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-info .email,
+.user-meta .email {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Settings/logout buttons (matches Dashboard) */
+.tp-settings,
+.tp-footer {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-btn,
+.logout-btn,
+.footer-btn {
+  background: transparent;
+  border: 1px solid #eee;
+  padding: 8px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 600;
+}
+
+.logout-btn,
+.footer-btn.logout {
+  border-color: #ffd6d6;
+  color: #ff4d4d;
+}
+
+/* ===============================
+   MAIN CONTENT AREA
+================================= */
+
+.tp-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-topbar {
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tp-topbar-title {
+  width: 80%;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tp-content {
+  padding: 20px 36px 150px 36px; /* bottom padding leaves space for fixed bottom bar */
+}
+
+.tp-section-title {
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+/* ===============================
+   ACTION ROW (Add Category, Filter Date, Search)
+================================= */
+
+.tp-action-row {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tp-search-small {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  min-width: 200px;
+}
+
+/* ===============================
+   DATE RANGE COMPACT FILTERS
+================================= */
+
+.tp-filters-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tp-date-input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+  min-width: 160px;
+}
+
+/* ===============================
+   BUTTONS
+================================= */
+
+.btn {
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.primary {
+  background: #fafafa;
+  border: 1px solid rgba(0,0,0,0.12);
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.04);
+}
+
+.btn.small {
+  padding: 6px 8px;
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+/* ===============================
+   TABLE & CARD
+================================= */
+
+.tp-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.03);
+}
+
+.tp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tp-table th {
+  background: #dfdbda;
+  padding: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  text-align: left;
+}
+
+.tp-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  font-size: 14px;
+}
+
+.tp-table tbody tr:hover {
+  background: rgba(0,0,0,0.02);
+}
+
+.center {
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* STATUS BADGES */
+
+.badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge.completed {
+  background: #e7f8ed;
+  color: #046c3f;
+}
+
+.badge.pending {
+  background: #fff4d6;
+  color: #7a4c00;
+}
+
+.badge.cancelled {
+  background: #ffe5e5;
+  color: #8a1c1c;
+}
+
+/* TABLE FOOTER */
+
+.tp-table-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 13px;
+  align-items: center;
+}
+
+.tp-pagination {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===============================
+   BUDGET FIXED BOTTOM BAR
+================================= */
+
+/* The fixed bottom "budget row" sits above page footer. left offset matches sidebar width + spacing */
+.tp-budget-row {
+  position: fixed;
+  left: 240px;   /* accounts for sidebar width (220) + small gap */
+  right: 20px;
+  bottom: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+  font-weight: 600;
+  z-index: 1000;
+}
+
+/* Make sure the text cells are centered vertically */
+.tp-budget-row > div {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ===============================
+   MODALS
+================================= */
+
+.tp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+.tp-modal {
+  width: 360px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+
+.tp-modal input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.08);
+  margin-bottom: 12px;
+}
+
+.tp-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ===============================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 900px) {
+  .tp-sidebar {
+    display: none;
+  }
+
+  .tp-budget-row {
+    left: 12px;
+    right: 12px;
+  }
+
+  .tp-action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tp-search-small {
+    width: 100%;
+  }
+}

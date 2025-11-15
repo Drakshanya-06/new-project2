@@ -1,101 +1,223 @@
-/* frontend/src/Budgets.css */
+/* frontend/src/Budgets.css
+   Exact layout tuned to match the provided "first" screenshot:
+   - centered BUDGETS pill header
+   - Create Budget card with left-aligned small KPI box under it
+   - grey table below KPI (full width)
+   - sidebar / spacing consistent with mock
+*/
 
-.tp-page-wrapper {
-  display: flex;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-  color: #222;
+:root{
+  --bg:#f6f6f6;
+  --card:#fff;
+  --muted-border: rgba(0,0,0,0.06);
+  --accent:#6b5b4f;
+  --table-head:#dcd6d4;
+  --text:#222;
 }
 
-/* left sidebar smaller */
-.tp-sidebar-small {
-  width: 160px;
-  padding: 24px 16px;
-  background: #fff;
-  border-right: 1px solid #eef0f3;
-}
-.tp-brand { font-weight:700; margin-bottom:18px; }
-.tp-nav-small a { display:block; color:#333; padding:10px 6px; margin:6px 0; text-decoration:none; border-radius:8px; }
-.tp-nav-small a.active-link { background:#f1f6fb; color:#0b5ed7; }
+*{box-sizing:border-box}
 
-/* main */
-.tp-main-wide {
-  flex:1;
-  padding: 28px;
-  background: #f6f8fb;
+.tp-dashboard-root{
+  display:flex;
+  min-height:100vh;
+  font-family:"Georgia","Times New Roman",serif;
+  background:var(--bg);
+  color:var(--text);
 }
-.tp-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-.tp-header h1 { margin:0; font-size:24px; }
 
-/* cards & table */
-.tp-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 18px;
-  box-shadow: 0 4px 10px rgba(31,44,70,0.04);
+/* Sidebar */
+.tp-sidebar{
+  width:220px;
+  background:var(--card);
+  border-right:1px solid var(--muted-border);
+  padding:26px 18px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
-.muted { color:#667; }
+.tp-brand{
+  font-size:28px;
+  font-weight:900;
+  margin-bottom:12px;
+  letter-spacing:1px;
+  border-bottom:1px solid var(--muted-border);
+  padding-bottom:10px;
+  font-family:"Georgia","Times New Roman",serif;
+}
+.tp-nav{ display:flex; flex-direction:column; gap:12px; margin-top:10px; }
+.tp-nav a{
+  display:flex; align-items:center; gap:10px;
+  padding:12px; border-radius:8px;
+  background:var(--card); border:1px solid rgba(0,0,0,0.04);
+  color:var(--text); text-decoration:none; font-weight:600;
+}
+.tp-nav a.active{ background:#d9d6d3; color:#111; }
 
-.budgets-table {
+/* user area bottom */
+.tp-user-area{ margin-top:auto; padding-top:12px; border-top:1px solid var(--muted-border); }
+.tp-user{ display:flex; gap:12px; align-items:center; margin-bottom:10px; }
+.avatar{ width:40px;height:40px;border-radius:50%; background:#efefef; display:flex; align-items:center; justify-content:center; color:#444; font-weight:700; }
+.user-meta .name{ font-weight:700 } .user-meta .email{ font-size:12px; color:#777 }
+.tp-footer-links{ display:flex; flex-direction:column; gap:8px }
+.footer-btn{ padding:8px 10px; border-radius:8px; background:var(--card); border:1px solid rgba(0,0,0,0.04); text-decoration:none; color:#333; font-weight:600; }
+.footer-btn.logout{ color:#c12b2b; border-color: rgba(193,43,43,0.08) }
+
+/* Main area and page banner */
+.tp-main{ flex:1; padding:18px 28px; box-sizing:border-box; }
+
+.page-banner{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  margin-bottom:18px;
+}
+
+/* Center pill exactly as mock */
+.page-banner .title-pill{
+  flex:1; max-width:980px; margin:0 auto; text-align:center;
+  background:var(--card); border-radius:8px; padding:12px 22px;
+  border:1px solid var(--muted-border); box-shadow:0 2px 0 rgba(0,0,0,0.02);
+  font-weight:900; font-size:20px; letter-spacing:1px; font-family:"Georgia","Times New Roman",serif;
+}
+.page-banner .health-pill{
+  min-width:160px; text-align:center; background:var(--card); border-radius:8px; padding:8px 12px;
+  border:1px solid var(--muted-border); font-weight:700; font-size:14px;
+}
+
+/* Create Budget card */
+.create-card{
+  background:var(--card); border-radius:8px; padding:20px;
+  box-shadow:0 6px 18px rgba(28,39,53,0.04); margin-bottom:14px;
+  border:1px solid var(--muted-border);
+}
+.create-card h3{ margin:0 0 12px 0; font-weight:700; font-family:"Georgia","Times New Roman",serif; font-size:18px; }
+
+/* Form grid matching mock: 3 columns with category (span 2), amount, month on right */
+.create-form .form-grid{
+  display:grid;
+  grid-template-columns: 1fr 220px 220px;
+  gap:12px;
+  align-items:end;
+}
+.form-group{ display:flex; flex-direction:column; gap:6px; }
+.form-group label{ font-size:14px; font-weight:600; color:var(--text) }
+
+/* Category select spans left area */
+.create-form .form-grid .group-category{ grid-column:1 / span 1; }
+.create-form .form-grid .group-amount{ grid-column:2 / span 1; }
+.create-form .form-grid .group-month{ grid-column:3 / span 1; }
+
+/* Description row spans full width under inputs */
+.create-form .desc-row{ margin-top:12px; }
+.create-form input, .create-form select, .create-form textarea{
+  padding:10px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:#fbfbfb; font-size:14px;
+}
+.create-form textarea{ min-height:38px; }
+
+/* Actions aligned right like mock */
+.form-actions{ display:flex; justify-content:flex-end; gap:12px; margin-top:12px; }
+.btn{ padding:8px 14px; border-radius:8px; cursor:pointer; border:1px solid rgba(0,0,0,0.06); background:var(--card); font-weight:700; }
+.btn.primary{ background:var(--accent); color:#fff; border-color: rgba(0,0,0,0.06) }
+.btn.outline{ background:#fff; border:1px solid rgba(0,0,0,0.08) }
+.btn.small{ padding:6px 10px; font-size:13px; }
+.btn.danger{ background:#fff; border:1px solid rgba(193,43,43,0.12); color:#c12b2b; }
+
+/* *********
+   KEY CHANGE: KPI box small & LEFT-ALIGNED under Create card (exact as screenshot)
+   Then the small "recent" table sits below KPI (full width)
+   ********* */
+
+/* container for overall area (vertical stack) */
+.overall-block{
+  display:block;      /* ensure vertical stacking */
+  margin-bottom:18px;
+}
+
+/* KPI row (left aligned) - keep KPI small exactly like mock */
+.kpi-row{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  margin:8px 0 12px 0;
+}
+
+/* small KPI box (small, not centered or large) */
+.kpi-small{
+  width:220px;                 /* small fixed width like mock */
+  background:var(--card);
+  border-radius:8px;
+  padding:10px 12px;
+  border:1px solid var(--muted-border);
+  box-shadow:0 4px 12px rgba(28,39,53,0.03);
+  font-family:Arial, Helvetica, sans-serif;
+}
+.kpi-small .kpi-desc{ font-weight:700; font-size:14px; margin-bottom:6px; }
+.kpi-small .kpi-muted{ font-size:12px; color:#666; }
+
+/* recent-table-wrap now full width under KPI */
+.recent-table-wrap{
+  width:100%;
+  margin-top:10px;
+}
+
+/* recent table header style (narrow header like mock) */
+.recent-table{
   width:100%;
   border-collapse:collapse;
 }
-.budgets-table th, .budgets-table td {
-  padding: 14px 12px;
+.recent-table thead th{
+  background:var(--table-head);
+  padding:8px 12px;
   text-align:left;
-  border-bottom: 1px solid #eef2f6;
+  font-weight:700;
+  border:1px solid rgba(0,0,0,0.06);
+  font-family:Arial, Helvetica, sans-serif;
+  font-size:13px;
 }
-.budgets-table thead th { background: transparent; color:#333; font-weight:700; }
+.recent-table tbody td{
+  padding:10px 12px;
+  border-top:1px solid rgba(0,0,0,0.04);
+  font-family:Arial, Helvetica, sans-serif;
+  font-size:13px;
+  color:var(--text);
+}
 
-/* buttons */
-.btn {
-  display:inline-block;
-  padding:8px 14px;
+/* MAIN budgets table card (rounded & full width) */
+.table-card{
+  background:var(--card);
   border-radius:8px;
-  border:1px solid transparent;
-  background:#f3f4f6;
-  cursor:pointer;
+  padding:12px;
+  box-shadow:0 6px 18px rgba(28,39,53,0.04);
+  border:1px solid var(--muted-border);
+  margin-top:16px;
 }
-.btn.small { padding:6px 10px; font-size:13px; }
-.btn.primary { background:#0b5ed7; color:#fff; border-color:#0b5ed7; }
-.btn.outline { background: #fff; border-color:#d9e0ea; }
-.btn.danger { background:#fff; border-color:#f6c0c0; color:#c12b2b; }
-
-/* modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(12,18,30,0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
+.budgets-table{
+  width:100%; border-collapse:collapse; margin-top:8px;
 }
-.modal-card {
-  width: 820px;
-  background: #fff;
-  border-radius: 8px;
-  padding: 0;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-  max-height: 90vh;
-  overflow:auto;
+.budgets-table thead th{
+  background:var(--table-head);
+  padding:12px 14px; text-align:left; font-weight:700; border:1px solid rgba(0,0,0,0.06);
 }
-.modal-head { display:flex; justify-content:space-between; align-items:center; padding:16px 18px; border-bottom:1px solid #eef2f6; }
-.modal-head h4 { margin:0; }
-.icon-close { background:transparent; border:none; font-size:18px; cursor:pointer; }
-
-/* modal body and form */
-.modal-body { padding: 18px; }
-.row { display:flex; gap:14px; margin-bottom:12px; }
-.col { flex:1; display:flex; flex-direction:column; }
-label { font-size:13px; color:#555; margin-bottom:6px; }
-input[type="text"], input[type="number"], input[type="month"], textarea {
-  padding:10px 12px; border-radius:6px; border:1px solid #e6ebf1; background:#fbfdff;
-  font-size:14px;
+.budgets-table tbody td{
+  padding:12px 14px; border-top:1px solid rgba(0,0,0,0.04);
+  font-family:Arial, Helvetica, sans-serif;
 }
-textarea { min-height:86px; resize:vertical; }
 
-.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+/* bottom small pill bar (if present) */
+.tp-budget-row{
+  position:fixed; left:24px; right:24px; bottom:12px;
+  background:var(--card); border-radius:8px; padding:10px 14px; display:flex; gap:12px; align-items:center;
+  justify-content:center; border:1px solid var(--muted-border); box-shadow:0 8px 30px rgba(0,0,0,0.06); font-weight:700;
+}
 
-.error-box { background:#fff3f3; color:#a11; padding:8px 12px; border-radius:6px; margin-bottom:12px; }
+/* responsive tweaks */
+@media(max-width:1100px){
+  .create-form .form-grid{ grid-template-columns: 1fr 200px; }
+  .kpi-small{ width:200px; }
+}
+@media(max-width:700px){
+  .tp-sidebar{ display:none; }
+  .page-banner .title-pill{ max-width:100%; margin-left:0; }
+  .create-form .form-grid{ grid-template-columns:1fr; }
+  .create-form .group-amount, .create-form .group-month { grid-column:1 / span 1; }
+  .kpi-row{ flex-direction:row; gap:10px; }
+  .tp-main{ padding:12px; }
+}

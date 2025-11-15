@@ -10,7 +10,7 @@ import OTPEntry from './OTPEntry';
 import ResetPassword from './ResetPassword';
 import './App.css';
 
-// Lazy load pages (only define once)
+// Lazy load pages (define each page only once)
 const Transactions = React.lazy(() => import('./Transactions'));
 const Budgets = React.lazy(() => import('./Budgets'));
 const TaxEstimator = React.lazy(() => import('./TaxEstimator'));
