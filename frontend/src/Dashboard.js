@@ -1,4 +1,3 @@
-// frontend/src/Dashboard.js
 import React, { useEffect, useState, useCallback } from 'react';
 import { FaHome, FaExchangeAlt, FaWallet, FaCalculator, FaChartPie, FaPlus, FaTimes, FaSignOutAlt, FaCog } from 'react-icons/fa';
 import { useNavigate, NavLink } from 'react-router-dom';
@@ -109,8 +108,8 @@ export default function Dashboard() {
 
       // Fill empty months with demo data so the chart is never flat (very large, obvious values)
       // Index 10 (November in the last-12-months window) is especially tall for easier comparison
-      const demoIncome = [12000, 14000, 15000, 16000, 17000, 18000, 19500, 21000, 22500, 24000, 26000, 25000];
-      const demoExpense = [7000, 8000, 8500, 9000, 9500, 10000, 11000, 12000, 13000, 14000, 15000, 14500];
+      const demoIncome = [26000, 29000, 31500, 34000, 36500, 39500, 42500, 45500, 48500, 51500, 55000, 53000];
+      const demoExpense = [16000, 17500, 19000, 20500, 22000, 23500, 25500, 27500, 29500, 31500, 33500, 32000];
       for (let i = 0; i < 12; i++) {
         if (inc[i] === 0 && exp[i] === 0) {
           inc[i] = demoIncome[i];
@@ -155,8 +154,8 @@ export default function Dashboard() {
 
       // Fill empty months with demo data so all previous months have bars (very large values for clarity)
       // Index 10 (November) is intentionally one of the highest income points.
-      const demoIncome = [12000, 14000, 15000, 16000, 17000, 18000, 19500, 21000, 22500, 24000, 26000, 25000];
-      const demoExpense = [7000, 8000, 8500, 9000, 9500, 10000, 11000, 12000, 13000, 14000, 15000, 14500];
+      const demoIncome = [26000, 29000, 31500, 34000, 36500, 39500, 42500, 45500, 48500, 51500, 55000, 53000];
+      const demoExpense = [16000, 17500, 19000, 20500, 22000, 23500, 25500, 27500, 29500, 31500, 33500, 32000];
       for (let i = 0; i < 12; i++) {
         if (inc[i] === 0 && exp[i] === 0) {
           inc[i] = demoIncome[i];
