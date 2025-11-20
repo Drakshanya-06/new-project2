@@ -180,7 +180,7 @@
 
 /* chart panel */
 .chart-panel h3, .pie-panel h3, .transactions-panel h3 { margin: 0 0 12px 0; font-size:16px; font-weight:800; }
-.chart-panel { min-height: 260px; display:flex; flex-direction:column; }
+.chart-panel { min-height: 500px; display:flex; flex-direction:column; }
 /* append to Dashboard.css */
 .chart-panel svg { display:block; width:100%; height:auto; }
 
@@ -195,14 +195,14 @@
 .bar-row .value { width: 110px; text-align:right; color:#222; font-weight:800; }
 
 /* pie and legend */
-.pie-and-legend { display:flex; gap:16px; align-items:center; }
+.pie-and-legend { display:flex; flex-direction:column; gap:12px; align-items:center; }
 .tp-pie { width:160px; height:160px; }
 .legend { list-style:none; padding:0; margin:0; font-weight:700; color:#444; }
 .legend li { display:flex; gap:8px; align-items:center; margin-bottom:8px; font-weight:600; }
 .legend .dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
 
 /* transactions table */
-.transactions { width:100%; border-collapse:collapse; font-family: "Arial", sans-serif; }
+.transactions { width:500%; border-collapse:collapse; font-family: "Arial", sans-serif; }
 .transactions thead th { background:#e7e2df; padding:12px; text-align:left; font-weight:800; color:#222; }
 .transactions td, .transactions th { padding:10px 8px; border-bottom:1px solid #f1f3f5; }
 .transactions .amount { text-align:right; font-weight:800; color:#111; }
@@ -364,7 +364,8 @@
 .card-value { font-size: 22px; font-weight: 800; }
 
 /* grid of chart/pie/table */
-.tp-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: start; }
+/* Make right column (pie + recent transactions) a bit wider so Recent Transactions fits nicely */
+.tp-grid { display: grid; grid-template-columns: 2fr 1.4fr; gap: 16px; align-items: start; }
 
 /* panel common */
 .panel {
@@ -373,6 +374,18 @@
   border-radius: 12px;
   border: 1px solid rgba(0,0,0,0.06);
   box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+}
+
+/* make recent transactions panel wider to cover right-side empty space */
+.transactions-panel {
+  width: 180%;
+  max-width: none;
+  align-self: stretch;
+}
+
+/* make pie panel similar height to recent transactions panel */
+.pie-panel {
+  min-height: 500px;
 }
 
 /* Chart panel adjustments */
@@ -389,7 +402,7 @@
 }
 
 /* Pie and legend */
-.pie-and-legend { display:flex; gap:14px; align-items:center; }
+.pie-and-legend { display:flex; flex-direction:column; gap:12px; align-items:center; }
 .pie-wrap { width: 220px; height: 220px; display:flex; align-items:center; justify-content:center; }
 .tp-pie { width: 220px; height: 220px; display:block; }
 .pie-empty { color:#777; font-weight:700; }

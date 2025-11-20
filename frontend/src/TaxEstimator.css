@@ -1,60 +1,56 @@
-/* frontend/src/TaxEstimator.css
-   Unified styles for Tax Estimator page to match Dashboard/Transactions look
-*/
-
 /* ===============================
-   ROOT & LAYOUT
+    ROOT & LAYOUT
 ================================= */
-.tp-root {
+.tp-dashboard-root {
   display: flex;
   min-height: 100vh;
-  font-family: "Georgia", "Times New Roman", serif;
-  color: #222;
-  background: #f7f7f7;
+  font-family: Arial, sans-serif; /* Changed to match image's clean look */
+  color: #333;
+  background: #f0f2f5; /* Light background for the main content area */
 }
 
 /* ===============================
-   SIDEBAR (shared look)
+    SIDEBAR (shared look, adjusted for image)
 ================================= */
 .tp-sidebar {
-  width: 220px;
+  width: 240px; /* Slightly wider to match image */
   background: #fff;
-  border-right: 1px solid rgba(0,0,0,0.06);
-  padding: 18px 12px;
+  border-right: 1px solid #ddd;
+  padding: 18px 0; /* Padding handled by internal elements */
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 2px 0 rgba(0,0,0,0.03) inset;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  position: relative; /* For absolute positioning of user/settings */
 }
 
 .tp-brand {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: 1px;
-  padding: 6px 8px;
-  border-bottom: 1px solid rgba(0,0,0,0.04);
-  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+  padding: 10px 18px;
+  margin-bottom: 20px;
+  color: #1a1a1a;
 }
 
 /* nav */
 .tp-nav {
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
+  padding: 0 10px;
+  flex-grow: 1; /* Allows nav to take up available space */
 }
 
 .tp-nav a {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border-radius: 6px;
   text-decoration: none;
-  color: #333;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.05);
-  font-weight: 600;
+  color: #444;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .tp-nav a .icon {
@@ -62,253 +58,339 @@
   text-align: center;
 }
 
+.tp-nav a:hover {
+  background: #f5f5f5;
+}
+
 .tp-nav a.active {
-  background: #d9d6d3;
-  font-weight: 700;
+  background: #e9ecef; /* Lighter highlight for active state */
+  font-weight: 600;
+  color: #1a1a1a;
+  border-left: 3px solid #6c757d; /* Sidebar highlight */
+  padding-left: 13px; /* Compensate for border width */
 }
 
-/* ===============================
-   USER AREA (bottom of sidebar)
-================================= */
-.tp-user-area {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid rgba(0,0,0,0.04);
-  width: 100%;
-}
-
+/* User Info at the bottom */
 .tp-user {
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding-top:6px;
-  width:100%;
+  position: absolute;
+  bottom: 60px; /* Space for settings/logout */
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 15px 18px;
+  border-top: 1px solid #eee;
 }
 
-.avatar {
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#efefef;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  color:#555;
+.tp-user .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ced4da;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #333;
 }
 
-/* user text */
-.user-meta .name {
-  font-weight:700;
-  font-size:14px;
+.tp-user .name {
+  font-weight: 600;
+  font-size: 14px;
 }
 
-.user-meta .email {
-  font-size:12px;
-  color:#666;
-  margin-top:2px;
+.tp-user .email {
+  font-size: 12px;
+  color: #6c757d;
 }
 
-/* footer links in sidebar */
-.tp-footer-links {
-  margin-top:8px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+/* Settings/Logout at the very bottom, in image style */
+.tp-settings-image-style {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 10px 10px;
+  padding-top: 5px; /* Adjust padding */
+  border-top: 1px solid #eee;
 }
 
-.footer-btn {
-  padding:8px 10px;
-  border-radius:8px;
-  border:1px solid rgba(0,0,0,0.06);
-  background:#fff;
-  text-decoration:none;
-  color:#333;
-  font-weight:600;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-}
-
-.footer-btn.logout {
-  color:#ff4d4d;
-  border-color: rgba(255,77,77,0.12);
-}
-
-/* ===============================
-   MAIN CONTENT AREA
-================================= */
-.tp-main {
-  flex: 1;
-  display:flex;
-  flex-direction:column;
-}
-
-.tp-topbar {
-  height: 60px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.tp-topbar-title {
-  width: 80%;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 10px;
+.tp-settings-image-style .image-style-link {
+  display: flex;
+  gap: 12px;
+  align-items: center;
   padding: 10px 16px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 20px;
-  box-shadow: 0 2px 0 rgba(0,0,0,0.02);
+  border-radius: 6px;
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
 }
-
-.tp-content {
-  padding: 20px 36px 140px 36px; /* bottom padding to leave space for budget bar */
-}
-
-.tp-section-title {
-  font-size: 18px;
-  margin: 18px 0;
-  font-weight: 700;
+.tp-settings-image-style .image-style-link:hover {
+  background: #f5f5f5;
 }
 
 /* ===============================
-   FILTERS row
+    MAIN CONTENT AREA - ESTIMATOR SPECIFIC
 ================================= */
-.te-filters {
-  display:flex;
-  gap:12px;
-  align-items:center;
-  margin-bottom:18px;
-  flex-wrap:wrap;
+.tp-main-estimator {
+  flex: 1;
+  padding: 30px;
+  background-color: #f0f2f5;
 }
 
-.te-select {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.08);
+.tp-header-estimator {
+  margin-bottom: 25px;
+}
+
+.tp-header-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.tp-header-subtitle {
+  font-size: 16px;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+.tp-content-layout {
+  display: flex;
+  gap: 30px;
+}
+
+/* Left Panel: Tax Calculator Form */
+.tp-calculator-panel {
+  flex: 3;
   background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* search */
-.te-search {
-  margin-left:auto;
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-.te-search input {
-  padding:8px 12px;
-  border-radius:8px;
-  border:1px solid rgba(0,0,0,0.06);
-  min-width:220px;
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 20px;
 }
 
-/* ===============================
-   KPI cards
-================================= */
-.te-kpis {
-  display:flex;
-  gap:16px;
-  margin-bottom: 18px;
-  flex-wrap:wrap;
+.tp-quarterly-calculator {
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
 }
 
-.kpi-card {
-  background:#fff;
-  padding:14px 16px;
-  border-radius:10px;
-  min-width:220px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+.tp-income-section {
+  margin-bottom: 30px;
 }
 
-.kpi-title { font-weight:700; color:#444; margin-bottom:6px; }
-.kpi-value { font-size:20px; font-weight:800; margin-bottom:6px; }
-.kpi-note { color:#777; font-size:13px; }
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
 
-/* ===============================
-   CHART card + line chart
-================================= */
-.te-card.chart-card {
-  background:#fff;
-  border-radius:12px;
-  padding:12px 16px;
-  box-shadow:0 3px 12px rgba(0,0,0,0.03);
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 16px;
+}
+
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  background-color: #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.form-group select {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="gray"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+.tp-create-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.tp-create-button {
+  padding: 10px 20px;
+  background-color: #495057; /* Darker gray to match image's button */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.tp-create-button:hover {
+  background-color: #343a40;
+}
+
+/* Right Panel: Tax Summary */
+.tp-summary-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tp-summary-section {
+  background: #f8f9fa; /* Lighter gray background for the summary box */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #ddd;
+}
+
+.tp-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tp-summary-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.tp-summary-icon {
+  font-size: 100px;
+}
+
+.tp-summary-description {
+  font-size: 10px;
+  color: #6c757d;
+  line-height: 4.5;
+}
+
+.tp-important-info-section {
+  background: #495057; /* Darker background to match the image's "Important Info" box */
+  padding: 70px;
+  border-radius: 10px;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.tp-important-info-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 10px;
+}
+
+.tp-important-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tp-important-info-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
   margin-bottom: 12px;
 }
 
-.chart-head {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding-bottom:8px;
+.tp-important-info-list li:last-child {
+  margin-bottom: 0;
 }
 
-.chart-legends {
-  display:flex;
-  gap:12px;
-  align-items:center;
-  color:#555;
-  font-weight:600;
+.info-label {
+  font-weight: 400;
 }
 
-.legend-dot {
-  display:inline-block;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  margin-right:6px;
+.info-value {
+  font-weight: 700;
 }
 
-.legend-dot.black { background:#111827; }
-.legend-dot.gray { background:#9CA3AF; }
-
-.chart-area {
-  padding: 12px 2px 18px;
-}
-
-/* ensure the svg scales responsively */
-.te-linechart { width:100%; height:auto; display:block; }
 
 /* ===============================
-   BUDGET BOTTOM ROW (same fixed bar)
+    RESPONSIVE
 ================================= */
-.tp-budget-row {
-  position: fixed;
-  left: 240px;   /* aligns with sidebar width */
-  right: 20px;
-  bottom: 12px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 14px;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-  font-weight: 600;
-  z-index: 1000;
+@media (max-width: 1200px) {
+  .tp-content-layout {
+    flex-direction: column;
+  }
+  .tp-calculator-panel {
+    flex: auto;
+  }
+  .tp-summary-panel {
+    flex: auto;
+  }
 }
 
-.tp-budget-row > div {
-  display:flex;
-  align-items:center;
-  justify-content:center;
+@media (max-width: 768px) {
+  .tp-dashboard-root {
+    flex-direction: column;
+  }
+  .tp-sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding-bottom: 5px;
+    position: static;
+  }
+  .tp-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 10px 10px;
+  }
+  .tp-nav a {
+    flex: 1 1 calc(50% - 12px);
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+  }
+  .tp-user, .tp-settings-image-style {
+    position: static;
+    border-top: none;
+    padding: 10px 18px 0;
+  }
+  .tp-user {
+    display: none; /* Hide user info for small screens to save space */
+  }
+  .tp-settings-image-style {
+    flex-direction: row;
+    justify-content: space-around;
+    padding-bottom: 10px;
+  }
+  .tp-settings-image-style .image-style-link {
+    justify-content: center;
+  }
+  .form-grid-2 {
+    grid-template-columns: 2fr;
+  }
+  .tp-main-estimator {
+    padding: 20px;
+  }
 }
-
-/* ===============================
-   small utility & center states
-================================= */
-.center { text-align:center; padding:24px; color:#666; }
-
-/* ===============================
-   RESPONSIVE
-================================= */
-@media (max-width: 980px) {
-  .tp-sidebar { display:none; }
-  .te-kpis { flex-direction:column; }
-  .tp-budget-row { left: 12px; right: 12px; }
-  .te-search input { min-width: 120px; }
-}
-

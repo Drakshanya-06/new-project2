@@ -1,6 +1,6 @@
 // frontend/src/Reports.jsx
-import React, { useEffect, useState, useCallback } from "react";
-import { FaHome, FaExchangeAlt, FaWallet, FaCalculator, FaChartPie, FaSyncAlt, FaCog, FaSignOutAlt } from "react-icons/fa";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { FaHome, FaExchangeAlt, FaWallet, FaCalculator, FaChartPie, FaSyncAlt, FaCog, FaSignOutAlt, FaEye, FaDownload, FaPrint } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { dataService } from "./services/dataService";
 import "./Reports.css";
@@ -14,6 +14,51 @@ export default function Reports() {
   const [rows, setRows] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [reportGenerated, setReportGenerated] = useState(false);
+
+  const budgetSummary = useMemo(() => ([
+    { category: 'Salary', budget: 120000, spent: 98000 },
+    { category: 'Marketing', budget: 45000, spent: 32000 },
+    { category: 'Operations', budget: 38000, spent: 21000 },
+    { category: 'Technology', budget: 52000, spent: 43000 },
+    { category: 'Travel', budget: 18000, spent: 9000 },
+  ].map(item => ({
+    ...item,
+    remaining: item.budget - item.spent,
+    status: item.spent > item.budget ? 'Over' : 'Healthy'
+  }))), []);
+
+  const demoIncome = useMemo(() => [25000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 50000, 48000], []);
+  const demoExpense = useMemo(() => [15000, 17000, 18000, 19000, 21000, 22000, 24000, 26000, 28000, 30000, 32000, 31000], []);
+
+  const buildDemoTransactions = useCallback(() => {
+    const now = new Date();
+    const demoTxs = [];
+    for (let i = 0; i < 12; i++) {
+      const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const isoDate = monthDate.toISOString();
+      const idx = (demoIncome.length - 1) - i;
+      const incomeVal = demoIncome[idx] || demoIncome[demoIncome.length - 1];
+      const expenseVal = demoExpense[idx] || demoExpense[demoExpense.length - 1];
+      demoTxs.push({
+        id: `demo-income-${i}`,
+        description: `Demo Income ${monthDate.toLocaleString('en-US', { month: 'short', year: 'numeric' })}`,
+        amount: incomeVal,
+        category: 'Demo Income',
+        date: isoDate,
+        type: 'Income',
+      });
+      demoTxs.push({
+        id: `demo-expense-${i}`,
+        description: `Demo Expense ${monthDate.toLocaleString('en-US', { month: 'short', year: 'numeric' })}`,
+        amount: -expenseVal,
+        category: 'Demo Expense',
+        date: isoDate,
+        type: 'Expense',
+      });
+    }
+    return demoTxs;
+  }, [demoIncome, demoExpense]);
   
   const [stats, setStats] = useState({
     totalBalance: 0,
@@ -138,9 +183,8 @@ export default function Reports() {
     });
     
     // Convert to array and sort by date (newest first)
-    const reportRows = Object.values(grouped)
+    let reportRows = Object.values(grouped)
       .sort((a, b) => new Date(b.start) - new Date(a.start))
-      .slice(0, 20) // Show more rows
       .map((item, idx) => {
         // For end date, add one year as shown in image
         const endDate = new Date(item.end);
@@ -155,6 +199,35 @@ export default function Reports() {
         };
       });
     
+    if (!reportRows.length) {
+      const demoTxs = buildDemoTransactions();
+      const fallbackGrouped = {};
+      demoTxs.forEach(tx => {
+        const d = new Date(tx.date);
+        const dateStr = d.toISOString().slice(0, 10);
+        if (!fallbackGrouped[dateStr]) {
+          fallbackGrouped[dateStr] = { start: dateStr, end: dateStr, income: 0, balance: 0 };
+        }
+        if (tx.type === 'Income') {
+          fallbackGrouped[dateStr].income += Math.abs(Number(tx.amount) || 0);
+        }
+        fallbackGrouped[dateStr].balance += Number(tx.amount) || 0;
+      });
+      reportRows = Object.values(fallbackGrouped)
+        .sort((a, b) => new Date(b.start) - new Date(a.start))
+        .map((item, idx) => {
+          const endDate = new Date(item.end);
+          endDate.setFullYear(endDate.getFullYear() + 1);
+          return {
+            id: `demo-${idx}`,
+            start: item.start,
+            end: endDate.toISOString().slice(0, 10),
+            income: item.income,
+            balance: Math.abs(item.balance),
+          };
+        });
+    }
+
     setRows(reportRows);
   }, []);
 
@@ -184,10 +257,11 @@ export default function Reports() {
       });
     }
     
-    setFilteredTransactions(filtered);
-    calculateStats(filtered);
-    generateReportRows(filtered);
-  }, [startDate, endDate, calculateStats, generateReportRows]);
+    const finalTxs = filtered.length ? filtered : buildDemoTransactions();
+    setFilteredTransactions(finalTxs);
+    calculateStats(finalTxs);
+    generateReportRows(finalTxs);
+  }, [startDate, endDate, calculateStats, generateReportRows, buildDemoTransactions]);
 
   // Load data and subscribe to updates
   useEffect(() => {
@@ -209,6 +283,75 @@ export default function Reports() {
 
   const handleGenerate = () => {
     applyFilters(transactions);
+    setReportGenerated(true);
+  };
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handlePreview = () => {
+    const previewWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!previewWindow) return;
+
+    const tableRows = rows.map(r => `
+      <tr>
+        <td>${r.start}</td>
+        <td>${r.end}</td>
+        <td>$${Number(r.income).toFixed(2)}</td>
+        <td>$${Number(r.balance).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    previewWindow.document.write(`
+      <html>
+        <head>
+          <title>Report Preview</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 24px; }
+            h1 { margin-bottom: 16px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background: #f4f4f4; }
+          </style>
+        </head>
+        <body>
+          <h1>Report Preview</h1>
+          <p><strong>Date range:</strong> ${startDate || 'N/A'} to ${endDate || 'N/A'}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Income</th>
+                <th>Balance Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows || '<tr><td colspan="4" style="text-align:center;">No data</td></tr>'}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `);
+    previewWindow.document.close();
+  };
+
+  const handleDownload = () => {
+    if (!rows.length) return;
+    const header = ['Start Date', 'End Date', 'Income', 'Balance Amount'];
+    const csvRows = [
+      header.join(','),
+      ...rows.map(r => [r.start, r.end, Number(r.income).toFixed(2), Number(r.balance).toFixed(2)].join(','))
+    ];
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `taxpal-report-${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
 
   const handleRefresh = () => {
@@ -324,6 +467,13 @@ export default function Reports() {
               </button>
             </div>
           </div>
+          {reportGenerated && (
+            <div className="report-actions">
+              <button className="btn outline" onClick={handlePreview}><FaEye style={{marginRight: 6}} /> Preview</button>
+              <button className="btn outline" onClick={handleDownload}><FaDownload style={{marginRight: 6}} /> Download</button>
+              <button className="btn primary" onClick={handlePrint}><FaPrint style={{marginRight: 6}} /> Print</button>
+            </div>
+          )}
         </section>
 
         {/* KPI Cards */}
@@ -386,15 +536,33 @@ export default function Reports() {
           </table>
         </section>
 
-        {/* Bottom Navigation Row */}
-        <div className="tp-budget-row" style={{marginTop: '24px', padding: '12px 16px', background: '#f9f9f9', borderRadius: '6px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '12px', fontWeight: '600', fontSize: '14px', color: '#333'}}>
-          <div>Category</div>
-          <div>Budget</div>
-          <div>Spent</div>
-          <div>Remaining</div>
-          <div>Status</div>
-          <div>Action</div>
-        </div>
+        {/* Budget Overview */}
+        <section className="reports-budget-card">
+          <div className="reports-budget-row header">
+            <div>Category</div>
+            <div>Budget</div>
+            <div>Spent</div>
+            <div>Remaining</div>
+            <div>Status</div>
+            <div>Action</div>
+          </div>
+          {budgetSummary.map((item, idx) => (
+            <div className="reports-budget-row" key={item.category}>
+              <div>{item.category}</div>
+              <div>${item.budget.toLocaleString()}</div>
+              <div>${item.spent.toLocaleString()}</div>
+              <div>${item.remaining.toLocaleString()}</div>
+              <div>
+                <span className={`status-pill ${item.status === 'Over' ? 'negative' : 'positive'}`}>
+                  {item.status === 'Over' ? 'Over budget' : 'On track'}
+                </span>
+              </div>
+              <div>
+                <button className="btn outline mini">View</button>
+              </div>
+            </div>
+          ))}
+        </section>
       </main>
     </div>
   );

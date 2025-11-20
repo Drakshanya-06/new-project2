@@ -1,5 +1,5 @@
 // frontend/src/Transactions.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaHome, FaExchangeAlt, FaWallet, FaCalculator, FaChartPie, FaCog, FaSignOutAlt } from "react-icons/fa";
@@ -63,6 +63,48 @@ export default function Transactions() {
   // modal
   const [showAddCat, setShowAddCat] = useState(false);
 
+  const demoIncome = useMemo(() => [25000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 50000, 48000], []);
+  const demoExpense = useMemo(() => [15000, 17000, 18000, 19000, 21000, 22000, 24000, 26000, 28000, 30000, 32000, 31000], []);
+
+  const buildDemoTransactions = () => {
+    const now = new Date();
+    const demoTxs = [];
+    const merchants = ['Amazon', 'Uber', 'Airbnb', 'Starbucks', 'Walmart', 'Netflix', 'Apple', 'Target', 'Shell', 'DoorDash'];
+    const cards = ['Visa •••• 1245', 'Mastercard •••• 8421', 'Amex •••• 9001'];
+    for (let i = 0; i < 40; i++) {
+      const offsetDays = i * 3;
+      const date = new Date(now.getTime() - offsetDays * 24 * 60 * 60 * 1000);
+      const iso = date.toISOString();
+      const incomeIdx = i % demoIncome.length;
+      const expenseIdx = i % demoExpense.length;
+      const merchant = merchants[i % merchants.length];
+      const card = cards[i % cards.length];
+      demoTxs.push({
+        id: `demo-income-${i}`,
+        description: `Deposit ${merchant}`,
+        merchant,
+        category: 'Demo Income',
+        type: 'Income',
+        amount: demoIncome[incomeIdx],
+        date: iso,
+        card,
+        status: 'Completed',
+      });
+      demoTxs.push({
+        id: `demo-expense-${i}`,
+        description: `Purchase ${merchant}`,
+        merchant,
+        category: 'Demo Expense',
+        type: 'Expense',
+        amount: -demoExpense[expenseIdx],
+        date: iso,
+        card,
+        status: i % 7 === 0 ? 'Pending' : 'Completed',
+      });
+    }
+    return demoTxs;
+  };
+
   // Load transactions from data service
   useEffect(() => {
     const loadData = async () => {
@@ -110,6 +152,10 @@ export default function Transactions() {
     
     // Show only expense transactions (as per image)
     filtered = filtered.filter(tx => tx.type === 'Expense' || (tx.amount && tx.amount < 0));
+
+    if (!filtered.length) {
+      filtered = buildDemoTransactions().filter(tx => tx.type === 'Expense');
+    }
     
     setTransactions(filtered);
     setTotal(filtered.length);
@@ -287,7 +333,7 @@ export default function Transactions() {
                   <tr><td colSpan="5" className="center">Loading...</td></tr>
                 ) : transactions.length === 0 ? (
                   <tr><td colSpan="5" className="center">No transactions</td></tr>
-                ) : transactions.slice(0, 4).map(tx => (
+                ) : transactions.slice(0, 6).map(tx => (
                   <tr key={tx.id || tx._id || Math.random()}>
                     <td>{formatDate(tx.date)}</td>
                     <td>{tx.merchant || tx.description || 'N/A'}</td>

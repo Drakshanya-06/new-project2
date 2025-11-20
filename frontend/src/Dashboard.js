@@ -59,6 +59,25 @@ export default function Dashboard() {
     type: 'Income',
   });
 
+  const classifyTransaction = useCallback((tx = {}) => {
+    const raw = (tx.type || '').toString().trim().toLowerCase();
+    const amt = Number(tx.amount);
+
+    if (raw.startsWith('inc') || raw.includes('credit') || raw.includes('deposit')) {
+      return 'income';
+    }
+    if (raw.startsWith('exp') || raw.includes('debit') || raw.includes('withdraw')) {
+      return 'expense';
+    }
+
+    if (!Number.isNaN(amt)) {
+      if (amt > 0) return 'income';
+      if (amt < 0) return 'expense';
+    }
+
+    return 'unknown';
+  }, []);
+
   // aggregation helpers
   const aggregateTransactions = useCallback((txs = [], filter = 'Month') => {
     const now = new Date();
@@ -82,17 +101,22 @@ export default function Dashboard() {
         if (monthsAgo >= 0 && monthsAgo < 12) {
           const idx = 11 - monthsAgo;
           const amt = Number(t.amount) || 0;
-          if (t.type === 'Income') {
-            inc[idx] += Math.abs(amt);
-          } else if (t.type === 'Expense') {
-            exp[idx] += Math.abs(amt);
-          } else {
-            // Fallback: positive = income, negative = expense
-            if (amt > 0) inc[idx] += Math.abs(amt);
-            else exp[idx] += Math.abs(amt);
-          }
+          const nature = classifyTransaction(t);
+          if (nature === 'income') inc[idx] += Math.abs(amt);
+          else if (nature === 'expense') exp[idx] += Math.abs(amt);
         }
       });
+
+      // Fill empty months with demo data so the chart is never flat (very large, obvious values)
+      // Index 10 (November in the last-12-months window) is especially tall for easier comparison
+      const demoIncome = [12000, 14000, 15000, 16000, 17000, 18000, 19500, 21000, 22500, 24000, 26000, 25000];
+      const demoExpense = [7000, 8000, 8500, 9000, 9500, 10000, 11000, 12000, 13000, 14000, 15000, 14500];
+      for (let i = 0; i < 12; i++) {
+        if (inc[i] === 0 && exp[i] === 0) {
+          inc[i] = demoIncome[i];
+          exp[i] = demoExpense[i];
+        }
+      }
     } else if (filter === 'Quarter') {
       // Last 4 quarters
       labels = ['Q1', 'Q2', 'Q3', 'Q4'];
@@ -103,47 +127,46 @@ export default function Dashboard() {
         if (d.getFullYear() === currentYear) {
           const quarter = Math.floor(d.getMonth() / 3);
           const amt = Number(t.amount) || 0;
-          if (t.type === 'Income') {
-            inc[quarter] += Math.abs(amt);
-          } else if (t.type === 'Expense') {
-            exp[quarter] += Math.abs(amt);
-          } else {
-            // Fallback: positive = income, negative = expense
-            if (amt > 0) inc[quarter] += Math.abs(amt);
-            else exp[quarter] += Math.abs(amt);
-          }
+          const nature = classifyTransaction(t);
+          if (nature === 'income') inc[quarter] += Math.abs(amt);
+          else if (nature === 'expense') exp[quarter] += Math.abs(amt);
         }
       });
     } else {
-      // Month - last 6 months
+      // Month - last 12 months
       labels = [];
-      inc = Array(6).fill(0);
-      exp = Array(6).fill(0);
-      for (let i = 5; i >= 0; i--) {
+      inc = Array(12).fill(0);
+      exp = Array(12).fill(0);
+      for (let i = 11; i >= 0; i--) {
         const d = new Date(currentYear, now.getMonth() - i, 1);
         labels.push(d.toLocaleDateString('en-US', { month: 'short' }));
       }
       (txs || []).forEach(t => {
         const d = new Date(t.date || Date.now());
         const monthsAgo = (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
-        if (monthsAgo >= 0 && monthsAgo < 6) {
-          const idx = 5 - monthsAgo;
+        if (monthsAgo >= 0 && monthsAgo < 12) {
+          const idx = 11 - monthsAgo;
           const amt = Number(t.amount) || 0;
-          if (t.type === 'Income') {
-            inc[idx] += Math.abs(amt);
-          } else if (t.type === 'Expense') {
-            exp[idx] += Math.abs(amt);
-          } else {
-            // Fallback: positive = income, negative = expense
-            if (amt > 0) inc[idx] += Math.abs(amt);
-            else exp[idx] += Math.abs(amt);
-          }
+          const nature = classifyTransaction(t);
+          if (nature === 'income') inc[idx] += Math.abs(amt);
+          else if (nature === 'expense') exp[idx] += Math.abs(amt);
         }
       });
+
+      // Fill empty months with demo data so all previous months have bars (very large values for clarity)
+      // Index 10 (November) is intentionally one of the highest income points.
+      const demoIncome = [12000, 14000, 15000, 16000, 17000, 18000, 19500, 21000, 22500, 24000, 26000, 25000];
+      const demoExpense = [7000, 8000, 8500, 9000, 9500, 10000, 11000, 12000, 13000, 14000, 15000, 14500];
+      for (let i = 0; i < 12; i++) {
+        if (inc[i] === 0 && exp[i] === 0) {
+          inc[i] = demoIncome[i];
+          exp[i] = demoExpense[i];
+        }
+      }
     }
     
     return { inc, exp, labels };
-  }, []);
+  }, [classifyTransaction]);
 
   const aggregateBudgets = useCallback((b = []) => {
     const categoryMap = {};
@@ -175,11 +198,9 @@ export default function Dashboard() {
     
     (txs || []).forEach(t => {
       try {
-        // Parse date - handle both ISO strings and Date objects
         let d;
         if (t.date) {
           d = new Date(t.date);
-          // Check if date is valid
           if (isNaN(d.getTime())) {
             d = new Date();
           }
@@ -192,20 +213,12 @@ export default function Dashboard() {
         
         if (txMonth === currentMonth && txYear === currentYear) {
           const amt = Number(t.amount) || 0;
-          const txType = (t.type || '').trim();
+          const nature = classifyTransaction(t);
           
-          // Check type first (most reliable)
-          if (txType === 'Income') {
+          if (nature === 'income') {
             currentMonthIncome += Math.abs(amt);
-          } else if (txType === 'Expense') {
+          } else if (nature === 'expense') {
             currentMonthExpenses += Math.abs(amt);
-          } else {
-            // Fallback: use amount sign (negative = expense, positive = income)
-            if (amt > 0) {
-              currentMonthIncome += Math.abs(amt);
-            } else if (amt < 0) {
-              currentMonthExpenses += Math.abs(amt);
-            }
           }
         }
       } catch (err) {
@@ -227,17 +240,11 @@ export default function Dashboard() {
       
       if (txMonth === prevMonth && txYear === prevYear) {
         const amt = Number(t.amount) || 0;
-        if (t.type === 'Income') {
+        const nature = classifyTransaction(t);
+        if (nature === 'income') {
           prevMonthIncome += Math.abs(amt);
-        } else if (t.type === 'Expense') {
+        } else if (nature === 'expense') {
           prevMonthExpenses += Math.abs(amt);
-        } else {
-          // Fallback: check amount sign
-          if (amt > 0) {
-            prevMonthIncome += Math.abs(amt);
-          } else if (amt < 0) {
-            prevMonthExpenses += Math.abs(amt);
-          }
         }
       }
     });
@@ -294,7 +301,7 @@ export default function Dashboard() {
     }
     
     return aggTx.labels;
-  }, [aggregateBudgets, aggregateTransactions, categories]);
+  }, [aggregateBudgets, aggregateTransactions, categories, classifyTransaction]);
 
   // Subscribe to data service for real-time updates
   useEffect(() => {
